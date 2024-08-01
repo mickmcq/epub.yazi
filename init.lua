@@ -1,10 +1,5 @@
 local M = {}
 
-local LINUX_BASE_PATH = "/.config/yazi/plugins/epub.yazi/epubtocover"
-local WINDOWS_BASE_PATH = "\\yazi\\config\\plugins\\epub.yazi\\epubtocover"
-
-local COMMAND_PATH = ya.target_family() == "windows" and os.getenv("APPDATA") .. WINDOWS_BASE_PATH or os.getenv("HOME") .. LINUX_BASE_PATH
-
 function M:peek()
 	local cache = ya.file_cache(self)
 	if not cache then
@@ -29,6 +24,21 @@ function M:preload()
 	local cache = ya.file_cache(self)
 	if not cache or fs.cha(cache) then
 		return 1
+	end
+
+	local LINUX_BASE_PATH = "/.config/yazi/plugins/epub.yazi/epubtocover"
+	local WINDOWS_BASE_PATH = "\\yazi\\config\\plugins\\epub.yazi\\epubtocover_win"
+	local MAC_BASE_PATH = "/.config/yazi/plugins/epub.yazi/epubtocover_mac"
+	local COMMAND_PATH
+	
+	local OS = ya.target_os()
+	
+	if OS == "linux" then
+		COMMAND_PATH = os.getenv("HOME") .. LINUX_BASE_PATH
+	elseif OS == "windows" then
+		COMMAND_PATH = os.getenv("APPDATA") .. WINDOWS_BASE_PATH
+	else
+		COMMAND_PATH = os.getenv("HOME") .. MAC_BASE_PATH
 	end
 
 	local output = Command(COMMAND_PATH)
